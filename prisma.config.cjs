@@ -1,0 +1,7 @@
+// Root-level Prisma config for Prisma 7 (CommonJS)
+module.exports = {
+  datasource: {
+    url: process.env.DATABASE_URL,
+    directUrl: process.env.DIRECT_URL,
+  },
+}
