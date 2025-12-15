@@ -1,25 +1,18 @@
-import { prisma } from "@/lib/prismaClient"
-
+import prisma from "@/lib/prisma";
 
 const authSeller = async (userId) => {
-    try{
+    try {
         const user = await prisma.user.findUnique({
             where: { id: userId },
             include: { store: true },
-        })
+        });
 
-        if(user.store){
-            if(user.store.status === "APPROVED"){
-                return user.store.id
-            }else{
-                return false
-        } 
-    
-      }catch(error){
-        console.error(error)
-      return false
-      }     
-}
-}
+        if (!user || !user.store) return false;
+        return user.store.status === "APPROVED" ? user.store.id : false;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+};
 
-export default authSeller
+export default authSeller;
