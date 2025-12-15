@@ -74,3 +74,6 @@ export async function POST(request) {
 }
 
 
+// Get all products for a seller
+
+
