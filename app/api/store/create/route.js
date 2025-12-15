@@ -1,3 +1,4 @@
+import imagekit from "@/configs/imageKit";
 import prisma from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -5,7 +6,7 @@ import { NextResponse } from "next/server";
 
 
 // Create the store
-export async function POST(req) {
+export async function POST(request) {
     try {
         const { userId } = getAuth(request)
         // Get the data from form

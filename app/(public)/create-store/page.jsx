@@ -74,6 +74,12 @@ export default function CreateStore() {
         fetchSellerStatus()
     }, [])
 
+    if(!user){
+        return(<div className="min-h-[80vh] flex items-center justify-center text-slate-400">
+            <h1 className="text-2xl sm:text-4xl font-semibold">Please <span className="text-slate-500">Login</span> to continue</h1>
+        </div>)
+    }
+
     return !loading ? (
         <>
             {!alreadySubmitted ? (
