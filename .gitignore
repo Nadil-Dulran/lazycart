@@ -62,3 +62,6 @@ lerna-debug.log*
 # (Prisma client is typically generated under node_modules and already ignored)
 .prisma/
 
+
+# clerk configuration (can include secrets)
+/.clerk/
