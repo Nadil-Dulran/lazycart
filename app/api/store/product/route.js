@@ -1,8 +1,10 @@
+export const runtime = 'nodejs'
+
 import imagekit from "@/configs/imageKit"
-import prisma  from "@/lib/prisma"
-import  NextResponse  from "next/server"
+import prisma from "@/lib/prisma"
+import { NextResponse } from "next/server"
 import authSeller from "@/middlewares/authSeller"
-import {getAuth} from "@clerk/nextjs/server"
+import { getAuth } from "@clerk/nextjs/server"
 
 
 
@@ -70,3 +72,6 @@ export async function POST(request) {
 
     }
 }
+
+// Get all products for a seller
+
