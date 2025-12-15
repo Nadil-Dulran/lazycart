@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-
+import { NextResponse } from "next/server";
 
 
 // Get store info & store products
@@ -22,7 +22,7 @@ export async function GET(request) {
             return NextResponse.json({ error: 'Store not found' }, { status: 400 })
         }
         return NextResponse.json({ store })
-        
+
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: error.code || error.message}, { status: 400 })
