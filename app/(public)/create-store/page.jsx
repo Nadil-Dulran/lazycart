@@ -95,6 +95,7 @@ export default function CreateStore() {
                 }
             })
             toast.success(data.message)
+            await fetchSellerStatus()
         } catch(error){
             toast.error(error?.response?.data?.error || error.message)
         }
@@ -103,8 +104,10 @@ export default function CreateStore() {
     }
 
     useEffect(() => {
+        if(user){
         fetchSellerStatus()
-    }, [])
+        }
+    }, [user])
 
     if(!user){
         return(<div className="min-h-[80vh] flex items-center justify-center text-slate-400">
