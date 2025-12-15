@@ -34,6 +34,38 @@ export default function CreateStore() {
 
     const fetchSellerStatus = async () => {
         // Logic to check if the store is already submitted
+        const token = await getToken()
+        try{
+            const { data } = await axios.get('/api/store/create', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if(["pending", "approved", "rejected"].includes(data.status)){
+                setAlreadySubmitted(true)
+                setStatus(data.status)
+                switch(data.status){
+                    case "pending":
+                        setMessage("Your store application is under review. We will notify you once it's approved.")
+                        break;
+                    case "approved":
+                        setMessage("Congratulations! Your store has been approved. Redirecting you to the seller dashboard...")
+                        setTimeout(() => {
+                            router.push('/store')
+                        }, 5000)
+                        break;
+                    case "rejected":
+                        setMessage("Unfortunately, your store application was rejected. You may contact support for more information.")
+                        break;
+                    default:
+                        break;
+                }
+            }else{
+                setAlreadySubmitted(false)
+            }
+        } catch(error){
+            toast.error(error?.response?.data?.error || error.message)
+        }
 
 
         setLoading(false)
