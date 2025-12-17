@@ -12,17 +12,23 @@ export async function GET(request) {
         const {userId} = getAuth(request)
         const storeId = await authSeller(userId)
 
+        if (!storeId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
         // Get all orders for seller
         const orders = await prisma.order.findMany({where: {storeId}})
 
         // Get all products with ratings for seller
         const products = await prisma.product.findMany({where: {storeId}})
 
-        const ratings = await prisma.rating.findMany({
-            where: {
-                product: {in: products.map((product) => product.id)}},
-                include: {user: true, product: true}
-        })
+        const productIds = products.map((product) => product.id)
+        const ratings = productIds.length
+            ? await prisma.rating.findMany({
+                where: { productId: { in: productIds } },
+                include: { user: true, product: true }
+            })
+            : []
 
         const dashboardData = {
             ratings,
