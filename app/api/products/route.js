@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 
 export async function GET(request) {
@@ -17,10 +18,13 @@ export async function GET(request) {
     })
 
     // Remove products with store isActive false
+    products = products.filter(product => product.store.isActive)
+
+        return NextResponse.json({ products })
 
     }catch(error){
         console.error(error);
-        return NextResponse.json({ error: error.code || error.message}, { status: 400 })
+        return NextResponse.json({ error: "An internal server error occurred."}, { status: 500 })
     }
     
 }
