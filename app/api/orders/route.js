@@ -113,3 +113,32 @@ export async function POST(request) {
         return NextResponse.json({ error: error.code || error.message }, { status: 400 })
     }
 }
+
+// Get all orders for the authenticated user
+export async function GET(request) {
+    try{
+                const { userId } = getAuth(request)
+                const orders = await prisma.order.findMany({
+            where: { userId, OR: [
+            {paymentMethod: paymentMethod.COD},
+            {AND: [{paymentMethod: paymentMethod.STRIPE}, {isPaid: true}]}
+            ]},
+            include: {
+                orderItems: {
+                    include: {
+                        product: true
+                    }
+                },
+                address: true
+            }, 
+            orderBy: { createdAt: 'desc' }
+        })
+
+        return NextResponse.json({ orders })
+
+
+    } catch(error){
+        console.error(error);
+        return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+}
