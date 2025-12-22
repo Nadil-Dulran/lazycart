@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
-import { parse } from "date-fns/parse";
 import { NextResponse } from "next/server";
 
 
@@ -86,7 +85,7 @@ export async function POST(request) {
                     addressId,
                     total: parseFloat(total.toFixed(2)),
                     paymentMethod,
-                    isCoiponUsed: coupon ? true : false,
+                    isCouponUsed: coupon ? true : false,
                     coupon: coupon ? coupon : {},
                     orderItems: {
                         create: sellerItems.map(item => ({
