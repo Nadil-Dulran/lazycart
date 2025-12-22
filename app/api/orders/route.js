@@ -69,7 +69,8 @@ export async function POST(request) {
             let total = sellerItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
 
             if(couponCode){
-                total -= (total * coupon.discountPercent) / 100;
+                // Use correct discount field from schema (discount)
+                total -= (total * coupon.discount) / 100;
             }
             if(!isPlusMember && !isShippingFeeAdded){
                 total += 5; // flat shipping fee
@@ -80,13 +81,15 @@ export async function POST(request) {
             
             const order = await prisma.order.create({
                 data: {
-                    userId,
-                    storeId,
-                    addressId,
+                    // Connect required relations to satisfy Prisma relation requirements
+                    user: { connect: { id: userId } },
+                    store: { connect: { id: storeId } },
+                    address: { connect: { id: addressId } },
                     total: parseFloat(total.toFixed(2)),
                     paymentMethod,
-                    isCouponUsed: coupon ? true : false,
-                    coupon: coupon ? coupon : {},
+                    isCouponUsed: !!coupon,
+                    // Persist only relevant coupon fields as JSON
+                    coupon: coupon ? { code: coupon.code, discount: coupon.discount } : {},
                     orderItems: {
                         create: sellerItems.map(item => ({
                             productId: item.id,
@@ -119,8 +122,9 @@ export async function GET(request) {
                 const { userId } = getAuth(request)
                 const orders = await prisma.order.findMany({
             where: { userId, OR: [
-            {paymentMethod: paymentMethod.COD},
-            {AND: [{paymentMethod: paymentMethod.STRIPE}, {isPaid: true}]}
+            // Use enum string values to avoid undefined identifier
+            { paymentMethod: 'COD' },
+            { AND: [{ paymentMethod: 'STRIPE' }, { isPaid: true }] }
             ]},
             include: {
                 orderItems: {
