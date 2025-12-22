@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
+import { parse } from "date-fns/parse";
 import { NextResponse } from "next/server";
 
 
@@ -27,9 +28,8 @@ export async function POST(request) {
         }
         }
 
-
-
-        if(coupon.forNewUser){
+        // Check if coupon is valid for the users
+        if(couponCode && coupon.forNewUser){
             const userorders = await prisma.order.findMany({
                 where: {
                     userId: userId
@@ -40,14 +40,76 @@ export async function POST(request) {
             }
         }
 
-        if (coupon.forMember){
-            const hasPlusPlan = has({plan: 'plus'})
-            if(!hasPlusPlan){
+        const isPlusMember = has({plan: 'plus'})
+       // Check if coupon is valid for members
+        if (couponCode && coupon.forMember){
+            if(!isPlusMember){
                 return NextResponse.json({error: 'Coupon valid for Members only'}, {status: 400})
             }
         }
+
+        // Group orders by storeId using a Map
+        const ordersByStore = new Map()
+        for (const item of items) {
+           const product = await prisma.product.findUnique({
+                where: { id: item.id }
+            })
+            const storeId = product.storeId
+            if (!ordersByStore.has(storeId)) {
+                ordersByStore.set(storeId, [])
+            }
+            ordersByStore.get(storeId).push({ ...item, price: product.price })
+        }
+        let orderIds = [];
+        let fullAmount = 0;
+
+        let isShippingFeeAdded = false
+
+        // Create orders for each seller
+        for (const [storeId, sellerItems] of ordersByStore.entries()) {
+            let total = sellerItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
+
+            if(couponCode){
+                total -= (total * coupon.discountPercent) / 100;
+            }
+            if(!isPlusMember && !isShippingFeeAdded){
+                total += 5; // flat shipping fee
+                isShippingFeeAdded = true
+            }
+
+            fullAmount += parseFloat(total.toFixed(2));
+            
+            const order = await prisma.order.create({
+                data: {
+                    userId,
+                    storeId,
+                    addressId,
+                    total: parseFloat(total.toFixed(2)),
+                    paymentMethod,
+                    isCoiponUsed: coupon ? true : false,
+                    coupon: coupon ? coupon : {},
+                    orderItems: {
+                        create: sellerItems.map(item => ({
+                            productId: item.id,
+                            quantity: item.quantity,
+                            price: item.price
+                        }))
+                    }
+                }
+            })
+            orderIds.push(order.id);
+        }
+
+        // Clear the cart
+        await prisma.user.update({
+            where: { id: userId },
+            data: { cart: {} }
+        })
+
+        return NextResponse.json({ message: 'Order places Successfully'})
+
     }catch(error){
-        console.log('[ORDERS_POST]', error);
-        return new NextResponse('Internal error', { status: 500 })
+        console.error(error);
+        return NextResponse.json({ error: error.code || error.message }, { status: 400 })
     }
 }
