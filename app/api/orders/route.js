@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
+import { PaymentMethod } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 
@@ -69,7 +70,6 @@ export async function POST(request) {
             let total = sellerItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
 
             if(couponCode){
-                // Use correct discount field from schema (discount)
                 total -= (total * coupon.discount) / 100;
             }
             if(!isPlusMember && !isShippingFeeAdded){
@@ -81,15 +81,13 @@ export async function POST(request) {
             
             const order = await prisma.order.create({
                 data: {
-                    // Connect required relations to satisfy Prisma relation requirements
-                    user: { connect: { id: userId } },
-                    store: { connect: { id: storeId } },
-                    address: { connect: { id: addressId } },
+                    userId,
+                    storeId,
+                    addressId,
                     total: parseFloat(total.toFixed(2)),
                     paymentMethod,
-                    isCouponUsed: !!coupon,
-                    // Persist only relevant coupon fields as JSON
-                    coupon: coupon ? { code: coupon.code, discount: coupon.discount } : {},
+                    isCouponUsed: coupon ? true : false,
+                    coupon: coupon ? coupon : {},
                     orderItems: {
                         create: sellerItems.map(item => ({
                             productId: item.id,
@@ -122,9 +120,8 @@ export async function GET(request) {
                 const { userId } = getAuth(request)
                 const orders = await prisma.order.findMany({
             where: { userId, OR: [
-            // Use enum string values to avoid undefined identifier
-            { paymentMethod: 'COD' },
-            { AND: [{ paymentMethod: 'STRIPE' }, { isPaid: true }] }
+            {paymentMethod: PaymentMethod.COD},
+            {AND: [{paymentMethod: PaymentMethod.STRIPE}, {isPaid: true}]}
             ]},
             include: {
                 orderItems: {
