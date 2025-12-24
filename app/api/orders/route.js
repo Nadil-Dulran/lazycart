@@ -127,8 +127,7 @@ export async function POST(request) {
                         appId: 'lazycart'
                     }
             })
-            return NextResponse.json({ session
-            })
+            return NextResponse.json({ session })
         }
            
 
