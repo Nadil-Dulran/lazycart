@@ -88,7 +88,7 @@ export async function POST(request) {
                     total: parseFloat(total.toFixed(2)),
                     paymentMethod,
                     isCouponUsed: coupon ? true : false,
-                    coupon: coupon ? coupon : {},
+                    coupon: coupon ? { connect: { id: coupon.id } }: undefined,
                     orderItems: {
                         create: sellerItems.map(item => ({
                             productId: item.id,
@@ -103,8 +103,8 @@ export async function POST(request) {
 
         // If payment method is STRIPE create a checkout session
         if(paymentMethod === 'STRIPE'){
-            const stripe = Stripe(process.env.STRIPE_SECRET_KEY)
-            const origin = await request.headers.get('origin')
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' })
+            const origin = await request.headers.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL;
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 line_items: [
