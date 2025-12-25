@@ -48,22 +48,39 @@ export async function POST(request) {
             return NextResponse.json({ error: "Username is already taken" }, { status: 400 })
         }
 
-        // Image upload to imagekit
-        const buffer = Buffer.from(await image.arrayBuffer());
-        const response = await imagekit.upload({
-            file: buffer,
-            fileName: image.name,
-            folder: "logos"
-        })
+        // Prepare a safe default logo (inline SVG) in case upload fails or image missing
+        const defaultLogo = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">` +
+            `<rect width="100%" height="100%" fill="#e2e8f0"/>` +
+            `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#475569" font-size="24" font-family="Arial, Helvetica, sans-serif">Store Logo</text>` +
+            `</svg>`
+        )
 
-        const optimizedImage= imagekit.url({
-            path: response.filePath,
-            transformation: [
-                {quality: "auto"},
-                    {format: "webp"},
-                    {width: "512"}
-            ]
-        })
+        let optimizedImage = defaultLogo
+        // Attempt image upload to ImageKit only if an image was provided
+        if (image && typeof image.arrayBuffer === 'function' && image.name) {
+            try {
+                const buffer = Buffer.from(await image.arrayBuffer());
+                const response = await imagekit.upload({
+                    file: buffer,
+                    fileName: image.name,
+                    folder: "logos"
+                })
+
+                optimizedImage = imagekit.url({
+                    path: response.filePath,
+                    transformation: [
+                        { quality: "auto" },
+                        { format: "webp" },
+                        { width: "512" }
+                    ]
+                })
+            } catch (uploadErr) {
+                // Log and fall back to default inline logo, do not block store creation
+                console.error('Image upload failed:', uploadErr)
+                optimizedImage = process.env.DEFAULT_STORE_LOGO_URL || defaultLogo
+            }
+        }
 
         const newStore = await prisma.store.create({
             data: {
