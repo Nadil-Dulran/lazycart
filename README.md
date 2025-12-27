@@ -3,7 +3,7 @@
 Multi vendor e-commerce app built with Next.js App Router and Tailwind CSS. Includes store management, product catalogs, cart/checkout, orders, coupons, ratings, and admin and store dashboards.
 
 **Deplyment**
-Live Deployment on Vercel: https://lazycart.vercel.app
+- Live Deployment on Vercel: https://lazycart.vercel.app
 
 
 **Tech Stack**
