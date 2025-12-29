@@ -1,9 +1,9 @@
 # LazyCart 🥱🛒
 
-Multi vendor e-commerce app built with Next.js App Router and Tailwind CSS. Includes store management, product catalogs, cart/checkout, orders, coupons, ratings, and admin and store dashboards.
+Multi vendor e-commerce app built with Next.js App Router and Tailwind CSS. Includes store management, product catalogs, cart/checkout, orders, coupons, ratings, admin and store dashboards.
 
 **Deplyment**
-Live Deployment on Vercel: https://lazycart.vercel.app
+- Live Deployment on Vercel: https://lazycart.vercel.app
 
 
 **Tech Stack**
@@ -62,4 +62,4 @@ Create `.env` or `.env.local` with:
 - `npx prisma studio` — open Prisma Studio (optional)
 
 —
-Project is a work in progress and will continue to evolve.
+Project is work in progress and will continue to evolve.
