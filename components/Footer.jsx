@@ -80,7 +80,7 @@ const Footer = () => {
                     </div>
                 </div>
                 <p className="py-4 text-sm text-slate-500">
-                    Copyright 2025 © LazyCart All Rights Reserved.
+                    Copyright 2026 © LazyCart All Rights Reserved.
                 </p>
             </div>
         </footer>
