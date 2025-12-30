@@ -23,7 +23,7 @@ Multi vendor e-commerce app built with Next.js App Router and Tailwind CSS. Incl
 - Admin dashboard: approve stores, manage coupons
 
 **Environment Variables**
-Create `.env` or `.env.local` with:
+Create `.env` with:
 - `DATABASE_URL` — PostgreSQL connection string
 - `IMAGEKIT_PUBLIC_KEY` — ImageKit public key
 - `IMAGEKIT_PRIVATE_KEY` — ImageKit private key
@@ -44,7 +44,7 @@ Create `.env` or `.env.local` with:
 **Development Notes**
 - Special characters in store usernames: URLs treat `#` as a fragment. Client pages reconstruct and encode the full username before API requests; use `encodeURIComponent(username)` for links to `/shop/<username>`.
 - ImageKit upload outages: store creation falls back to a placeholder logo (inline SVG or `DEFAULT_STORE_LOGO_URL`) so the route won’t fail if `upload.imagekit.io` is unreachable.
-- Prisma enums/relations: `PaymentMethod` uses `COD` or `STRIPE`. `Order` relations require `connect` for `user`, `store`, `address`. `Coupon` uses `discount` (not `discountPercent`).
+- Prisma enums/relations: `PaymentMethod` uses `COD` or `STRIPE`. `Order` relations require `connect` for `user`, `store`, `address`. `Coupon` uses `discount`.
 
 **Primary API Routes**
 - `POST /api/store/create` — create a store (uploads logo to ImageKit; falls back on failure)
@@ -56,10 +56,6 @@ Create `.env` or `.env.local` with:
 **Troubleshooting**
 - Image uploads failing (DNS or network): confirm ImageKit env vars and connectivity; the app will still create stores with a fallback logo.
 - Store not found when username has `#`: ensure links/navigations use encoded usernames; the shop page already handles hash fragments.
-
-**Scripts**
-- `npm run dev` — start development server
-- `npx prisma studio` — open Prisma Studio (optional)
 
 —
 Project is work in progress and will continue to evolve.
