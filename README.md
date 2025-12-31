@@ -58,5 +58,5 @@ Create `.env` with:
 - Store not found when username has `#`: ensure links/navigations use encoded usernames; the shop page already handles hash fragments.
 
 **Project is work in progress**
-- Main Branch (development/local): All works fine with COD & Cart(stripe) payment methods.
-- Deployment Branch (deployement/vercel): Deployed on Vercel and will continue develop to get seamless experience.
+- Development Branch (main/local): All works fine with COD & Card(stripe) payment methods.
+- Deployment Branch (deployment/vercel): Deployed on Vercel and will continue develop to get seamless experience.
