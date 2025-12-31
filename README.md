@@ -57,5 +57,6 @@ Create `.env` with:
 - Image uploads failing (DNS or network): confirm ImageKit env vars and connectivity; the app will still create stores with a fallback logo.
 - Store not found when username has `#`: ensure links/navigations use encoded usernames; the shop page already handles hash fragments.
 
-—
-Project is work in progress and will continue to evolve.
+**Project is work in progress**
+- Development Branch (main/local): All works fine with COD & Card(stripe) payment methods.
+- Deployment Branch (deployment/vercel): Deployed on Vercel and will continue develop to get seamless experience.
