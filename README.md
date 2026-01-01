@@ -60,3 +60,5 @@ Create `.env` with:
 **Project is work in progress**
 - Development Branch (main/local): All works fine with COD & Card(stripe) payment methods.
 - Deployment Branch (deployment/vercel): Deployed on Vercel and will continue develop to get seamless experience.
+
+Copyright 2026 © LazyCart All Rights Reserved.
